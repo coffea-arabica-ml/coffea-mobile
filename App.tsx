@@ -4,6 +4,7 @@ import { TelaUpload } from './src/pages/TelaUpload'
 import { TelaCarregando } from './src/pages/TelaCarregando'
 import { TelaResultado } from './src/pages/TelaResultado'
 import { TelaErro } from './src/pages/TelaErro'
+import { diagnosticarFolha } from './src/api/diagnostico'
 
 type Tela = 'inicial' | 'upload' | 'carregando' | 'resultado' | 'erro'
 
@@ -15,15 +16,18 @@ type Resultado = {
 export default function App() {
   const [tela, setTela] = useState<Tela>('inicial')
   const [resultado, setResultado] = useState<Resultado | null>(null)
-  const [erro] = useState('')
+  const [erro, setErro] = useState('')
 
-  function handleImagemSelecionada(_uri: string) {
+  async function handleImagemSelecionada(uri: string) {
     setTela('carregando')
-    // TODO (Frente 6): trocar isso pela chamada real ao coffea-backend
-    setTimeout(() => {
-      setResultado({ categoria: 'Ferrugem', severidade: 'Baixa' })
+    try {
+      const resultado = await diagnosticarFolha(uri)
+      setResultado(resultado)
       setTela('resultado')
-    }, 1500)
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : 'Erro desconhecido ao analisar a imagem.')
+      setTela('erro')
+    }
   }
 
   if (tela === 'inicial') return <TelaInicial onIniciar={() => setTela('upload')} />
