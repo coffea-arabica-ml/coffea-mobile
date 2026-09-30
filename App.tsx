@@ -1,40 +1,35 @@
-import { useState } from 'react'
-import { TelaInicial } from './src/pages/TelaInicial'
-import { TelaUpload } from './src/pages/TelaUpload'
-import { TelaCarregando } from './src/pages/TelaCarregando'
-import { TelaResultado } from './src/pages/TelaResultado'
-import { TelaErro } from './src/pages/TelaErro'
-import { diagnosticarFolha } from './src/api/diagnostico'
+import { useEffect } from 'react'
+import { Image, StyleSheet, Text, View } from 'react-native'
+import { useFonts } from 'expo-font'
+import * as SplashScreen from 'expo-splash-screen'
+import { StatusBar } from 'expo-status-bar'
+import { arquivosDeFonte, cores, tipos } from './src/theme'
 
-type Tela = 'inicial' | 'upload' | 'carregando' | 'resultado' | 'erro'
-
-type Resultado = {
-  categoria: string
-  severidade: string
-}
+// A splash fica na tela até as fontes carregarem — sem "piscar" com a fonte do sistema.
+void SplashScreen.preventAutoHideAsync().catch(() => {})
+SplashScreen.setOptions({ fade: true, duration: 250 })
 
 export default function App() {
-  const [tela, setTela] = useState<Tela>('inicial')
-  const [resultado, setResultado] = useState<Resultado | null>(null)
-  const [erro, setErro] = useState('')
+  const [fontesCarregadas, erroFontes] = useFonts(arquivosDeFonte)
+  const pronto = fontesCarregadas || erroFontes !== null
 
-  async function handleImagemSelecionada(uri: string) {
-    setTela('carregando')
-    try {
-      const resultado = await diagnosticarFolha(uri)
-      setResultado(resultado)
-      setTela('resultado')
-    } catch (e) {
-      setErro(e instanceof Error ? e.message : 'Erro desconhecido ao analisar a imagem.')
-      setTela('erro')
-    }
-  }
+  useEffect(() => {
+    if (pronto) void SplashScreen.hideAsync().catch(() => {})
+  }, [pronto])
 
-  if (tela === 'inicial') return <TelaInicial onIniciar={() => setTela('upload')} />
-  if (tela === 'upload') return <TelaUpload onImagemSelecionada={handleImagemSelecionada} />
-  if (tela === 'carregando') return <TelaCarregando />
-  if (tela === 'resultado' && resultado) return <TelaResultado resultado={resultado} onNovaAnalise={() => setTela('upload')} />
-  if (tela === 'erro') return <TelaErro mensagem={erro} onTentarNovamente={() => setTela('upload')} />
+  if (!pronto) return null
 
-  return null
+  return (
+    <View style={estilos.tela}>
+      <StatusBar style="dark" />
+      <Image source={require('./src/assets/logo-cafelens.png')} style={estilos.logo} />
+      <Text style={[tipos.titulo, estilos.nome]}>Cafélens</Text>
+    </View>
+  )
 }
+
+const estilos = StyleSheet.create({
+  tela: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, backgroundColor: cores.papel },
+  logo: { width: 72, height: 72 },
+  nome: { color: cores.tinta },
+})

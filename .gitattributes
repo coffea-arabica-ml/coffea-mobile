@@ -1,0 +1,8 @@
+# Imagens e PDFs nunca passam por conversão de fim de linha — inclusive a fixture
+# teste-extensao-trocada.png, que é texto de propósito.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.pdf binary
