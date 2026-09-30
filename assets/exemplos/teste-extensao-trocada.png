@@ -1,0 +1,4 @@
+Este arquivo é um .txt disfarçado de .png, usado para testar a validação de
+formato por conteúdo real do arquivo (magic bytes / content-type), não apenas
+pela extensão do nome do arquivo. Se o coffea-web aceitar isso como imagem
+válida, a validação está checando só a extensão — o que precisa ser corrigido.
