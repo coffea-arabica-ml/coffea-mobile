@@ -12,6 +12,7 @@ export {
   type OrigemImagem,
   type ArquivoVerificado,
   type ImagemLocal,
+  type ResultadoVerificacao,
 } from './imagem'
 export { enviarImagemParaDiagnostico, type OpcoesEnvio } from './diagnostico'
 export {

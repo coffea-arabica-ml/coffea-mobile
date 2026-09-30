@@ -1,35 +1,44 @@
-import { useEffect } from 'react'
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { useEffect, useState } from 'react'
+import { NavigationContainer } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
-import { arquivosDeFonte, cores, tipos } from './src/theme'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { ToastProvider } from './src/components/Toast'
+import { RaizNavegacao } from './src/navigation/RaizNavegacao'
+import { temaNavegacao } from './src/navigation/tema'
+import { HistoricoProvider } from './src/state/Historico'
+import { jaViuBoasVindas } from './src/state/preferencias'
+import { SessaoAnaliseProvider } from './src/state/SessaoAnalise'
+import { arquivosDeFonte } from './src/theme'
 
-// A splash fica na tela até as fontes carregarem — sem "piscar" com a fonte do sistema.
+// A splash fica na tela até as fontes e a preferência de 1º acesso carregarem — sem "piscar".
 void SplashScreen.preventAutoHideAsync().catch(() => {})
 SplashScreen.setOptions({ fade: true, duration: 250 })
 
 export default function App() {
   const [fontesCarregadas, erroFontes] = useFonts(arquivosDeFonte)
-  const pronto = fontesCarregadas || erroFontes !== null
+  const [rotaInicial, setRotaInicial] = useState<'Inicial' | 'Hub' | null>(null)
 
   useEffect(() => {
-    if (pronto) void SplashScreen.hideAsync().catch(() => {})
-  }, [pronto])
+    void jaViuBoasVindas().then((viu) => setRotaInicial(viu ? 'Hub' : 'Inicial'))
+  }, [])
 
-  if (!pronto) return null
+  // Se uma fonte falhar, o app segue com a fonte do sistema em vez de travar na splash.
+  if ((!fontesCarregadas && !erroFontes) || !rotaInicial) return null
 
   return (
-    <View style={estilos.tela}>
-      <StatusBar style="dark" />
-      <Image source={require('./src/assets/logo-cafelens.png')} style={estilos.logo} />
-      <Text style={[tipos.titulo, estilos.nome]}>Cafélens</Text>
-    </View>
+    <SafeAreaProvider>
+      <ToastProvider>
+        <SessaoAnaliseProvider>
+          <HistoricoProvider>
+            <NavigationContainer theme={temaNavegacao} onReady={() => void SplashScreen.hideAsync().catch(() => {})}>
+              <StatusBar style="dark" />
+              <RaizNavegacao rotaInicial={rotaInicial} />
+            </NavigationContainer>
+          </HistoricoProvider>
+        </SessaoAnaliseProvider>
+      </ToastProvider>
+    </SafeAreaProvider>
   )
 }
-
-const estilos = StyleSheet.create({
-  tela: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, backgroundColor: cores.papel },
-  logo: { width: 72, height: 72 },
-  nome: { color: cores.tinta },
-})

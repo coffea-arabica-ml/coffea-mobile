@@ -32,12 +32,21 @@ export interface ImagemLocal {
   semente: number
 }
 
+export type ResultadoVerificacao =
+  | { ok: true; arquivo: ArquivoVerificado }
+  /** Nome e tamanho acompanham o erro para o card mostrar qual arquivo foi recusado. */
+  | { ok: false; erro: DiagnosticoErro; nomeArquivo: string; tamanhoBytes: number | null }
+
 function erro(tipo: DiagnosticoErro['tipo'], mensagem: string): DiagnosticoErro {
   return { status: 'erro', tipo, mensagem }
 }
 
 export function ehErroDiagnostico(valor: unknown): valor is DiagnosticoErro {
   return typeof valor === 'object' && valor !== null && (valor as { status?: unknown }).status === 'erro'
+}
+
+function nomeDaUri(uri: string): string {
+  return decodeURIComponent(uri.split(/[\\/]/).pop() ?? '') || 'foto'
 }
 
 function lerCabecalho(arquivo: File): Uint8Array {
@@ -53,35 +62,32 @@ function lerCabecalho(arquivo: File): Uint8Array {
  * Checagem rápida (milissegundos), feita antes de mostrar o carregamento — mesma ordem do
  * coffea-web: formato pelo conteúdo, depois tamanho. O backend também valida; isto só responde na hora.
  */
-export function verificarImagem(origem: OrigemImagem): ArquivoVerificado | DiagnosticoErro {
+export function verificarImagem(origem: OrigemImagem): ResultadoVerificacao {
+  const nomeArquivo = origem.nomeArquivo?.trim() || nomeDaUri(origem.uri)
   let arquivo: File
   let formato: FormatoDetectado
   try {
     arquivo = new File(origem.uri)
     formato = detectarFormato(lerCabecalho(arquivo))
   } catch {
-    return erro('formato_invalido', 'Não foi possível abrir o arquivo escolhido.')
+    return { ok: false, erro: erro('formato_invalido', 'Não foi possível abrir o arquivo escolhido.'), nomeArquivo, tamanhoBytes: null }
   }
+  const tamanhoBytes = arquivo.size
 
   if (!formatoAceito(formato)) {
-    return erro(
-      'formato_invalido',
+    const mensagem =
       formato === 'desconhecido'
         ? 'O arquivo não é uma imagem reconhecida.'
-        : `O arquivo é ${NOMES_FORMATO[formato]}; aceitamos apenas ${LIMITES.formatosRotulo}.`,
-    )
+        : `O arquivo é ${NOMES_FORMATO[formato]}; aceitamos apenas ${LIMITES.formatosRotulo}.`
+    return { ok: false, erro: erro('formato_invalido', mensagem), nomeArquivo, tamanhoBytes }
   }
 
-  if (arquivo.size > LIMITES.tamanhoMaximoBytes) {
-    return erro('arquivo_muito_grande', `O arquivo excede o limite de ${LIMITES.tamanhoMaximoRotulo}.`)
+  if (tamanhoBytes > LIMITES.tamanhoMaximoBytes) {
+    const mensagem = `O arquivo excede o limite de ${LIMITES.tamanhoMaximoRotulo}.`
+    return { ok: false, erro: erro('arquivo_muito_grande', mensagem), nomeArquivo, tamanhoBytes }
   }
 
-  return {
-    uri: arquivo.uri,
-    nomeArquivo: origem.nomeArquivo?.trim() || arquivo.name || 'foto.jpg',
-    tamanhoBytes: arquivo.size,
-    formato,
-  }
+  return { ok: true, arquivo: { uri: arquivo.uri, nomeArquivo, tamanhoBytes, formato } }
 }
 
 /** FNV-1a de 32 bits. */
