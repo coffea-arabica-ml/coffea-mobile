@@ -2,7 +2,7 @@ import { forwardRef, type ReactNode } from 'react'
 import { Pressable, ScrollView, StyleSheet, View, type ScrollViewProps } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
-import { FlaskConical } from 'lucide-react-native'
+import { FlaskConical, type LucideIcon } from 'lucide-react-native'
 import { modoApi } from '../api'
 import { AVISO_DEMONSTRACAO } from '../content/textos'
 import { cores, MARGEM, raios } from '../theme'
@@ -51,13 +51,24 @@ export function CabecalhoHub() {
 }
 
 /** Sobretítulo + título grande (Fraunces) de cada seção do hub. */
-export function Titulo({ children, sobretitulo }: { children: ReactNode; sobretitulo?: ReactNode }) {
+export function Titulo({
+  children,
+  sobretitulo,
+  iconeSobretitulo: Icone,
+}: {
+  children: ReactNode
+  sobretitulo?: string
+  iconeSobretitulo?: LucideIcon
+}) {
   return (
     <View style={estilos.titulo}>
       {sobretitulo ? (
-        <Texto tipo="sobretitulo" cor={cores.tintaSuave}>
-          {sobretitulo}
-        </Texto>
+        <View style={estilos.sobretitulo}>
+          {Icone ? <Icone size={14} color={cores.tintaSuave} /> : null}
+          <Texto tipo="sobretitulo" cor={cores.tintaSuave}>
+            {sobretitulo}
+          </Texto>
+        </View>
       ) : null}
       <Texto tipo="titulo" accessibilityRole="header">
         {children}
@@ -109,4 +120,5 @@ const estilos = StyleSheet.create({
   },
   conteudo: { paddingHorizontal: MARGEM, paddingTop: 8, paddingBottom: 40, gap: 24 },
   titulo: { gap: 10 },
+  sobretitulo: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 })
