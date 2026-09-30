@@ -24,10 +24,13 @@ interface Props {
   /** No Resumo mostra a categoria; na Visualização (já agrupada por categoria) mostra "Folha N". */
   rotulo: 'categoria' | 'folha'
   aoPressionar: () => void
+  /** Destaca o círculo correspondente na foto enquanto a linha é tocada. */
+  aoDestacar?: (ativo: boolean) => void
+  destacada?: boolean
 }
 
 /** Uma folha com problema, tocável: abre o Detalhe dela. */
-export function LinhaFolha({ numero, folha, rotulo, aoPressionar }: Props) {
+export function LinhaFolha({ numero, folha, rotulo, aoPressionar, aoDestacar, destacada }: Props) {
   const info = CATEGORIAS[folha.categoria]
   const semLocalizacao = !folha.regiao
   const titulo = rotulo === 'categoria' ? info.nome : `Folha ${numero}`
@@ -35,12 +38,14 @@ export function LinhaFolha({ numero, folha, rotulo, aoPressionar }: Props) {
   return (
     <Pressable
       onPress={aoPressionar}
+      onPressIn={() => aoDestacar?.(true)}
+      onPressOut={() => aoDestacar?.(false)}
       accessibilityRole="button"
       accessibilityLabel={`Folha ${numero}: ${info.nome}, severidade ${ROTULO_SEVERIDADE[folha.severidade].toLowerCase()}${
         semLocalizacao ? ', sem localização na foto' : ''
       }`}
       accessibilityHint="Abre os detalhes, como cuidar e como prevenir"
-      style={({ pressed }) => [estilos.linha, pressed && { backgroundColor: cores.folha50 }]}
+      style={({ pressed }) => [estilos.linha, (pressed || destacada) && { backgroundColor: cores.folha50 }]}
     >
       <NumeroFolha numero={numero} cor={info.cor} />
       <View style={estilos.meio}>
