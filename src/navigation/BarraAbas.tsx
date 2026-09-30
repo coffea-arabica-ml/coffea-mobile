@@ -118,7 +118,7 @@ export function BarraAbas({ state, navigation }: BottomTabBarProps) {
   const avisar = useToast()
 
   return (
-    <View style={[estilos.barra, { paddingBottom: Math.max(bottom, 8) }]}>
+    <View style={[estilos.barra, { paddingBottom: Math.max(bottom, 8) }]} accessibilityRole="tablist">
       {state.routes.map((rota, indice) => {
         const info = ABAS[rota.name as keyof AbasParams]
         const focada = state.index === indice

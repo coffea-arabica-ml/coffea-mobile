@@ -16,7 +16,7 @@ import {
   Weight,
   type LucideIcon,
 } from 'lucide-react-native'
-import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated'
+import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated'
 import { LIMITES, origemDoPacote, type TipoErroUpload } from '../api'
 import { surgir } from '../components/animacoes'
 import { Botao } from '../components/Botao'
@@ -193,10 +193,13 @@ function EstadoVazio() {
 /** Barra indeterminada (animação `barra` do web). */
 function BarraProgresso() {
   const [largura, setLargura] = useState(0)
-  const progresso = useSharedValue(0)
+  const semMovimento = useReducedMotion()
+  // Com "Remover animações", a barra fica parada num ponto visível em vez de deslizar.
+  const progresso = useSharedValue(semMovimento ? 0.5 : 0)
   useEffect(() => {
+    if (semMovimento) return
     progresso.value = withRepeat(withTiming(1, { duration: duracoes.barra, easing: curvas.suave }), -1, false)
-  }, [progresso])
+  }, [progresso, semMovimento])
   const estilo = useAnimatedStyle(() => ({
     transform: [{ translateX: -largura / 3 + progresso.value * (largura + largura / 3) }],
   }))

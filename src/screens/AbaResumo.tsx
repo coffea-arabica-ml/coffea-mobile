@@ -54,7 +54,9 @@ export function AbaResumo({ navigation }: PropsAba<'Resumo'>) {
       </Animated.View>
 
       {problemas.length > 0 && (
-        <Animated.View entering={surgir(2)} style={estilos.cartao}>
+        // Sombra por fora, recorte por dentro: overflow hidden na mesma camada cortaria a sombra no iOS.
+        <Animated.View entering={surgir(2)} style={estilos.cartaoSombra}>
+          <View style={estilos.cartao}>
           <View style={estilos.cartaoCabecalho}>
             <Texto tipo="sobretitulo" cor={cores.tintaFraca} accessibilityRole="header">
               Diagnóstico por folha
@@ -79,6 +81,7 @@ export function AbaResumo({ navigation }: PropsAba<'Resumo'>) {
               </Texto>
             </View>
           )}
+          </View>
         </Animated.View>
       )}
 
@@ -127,13 +130,13 @@ const estilos = StyleSheet.create({
   grupoFoto: { gap: 16 },
   acoes: { gap: 12 },
   divisoria: { paddingTop: 22, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: cores.linha },
+  cartaoSombra: { borderRadius: raios.cartao, boxShadow: sombras.cartao },
   cartao: {
     overflow: 'hidden',
     borderRadius: raios.cartao,
     backgroundColor: cores.superficie,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: cores.linha,
-    boxShadow: sombras.cartao,
   },
   cartaoCabecalho: {
     paddingHorizontal: 16,

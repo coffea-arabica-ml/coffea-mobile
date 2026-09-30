@@ -7,6 +7,7 @@ export {
   verificarImagem,
   prepararImagem,
   descartarImagem,
+  copiarParaCache,
   origemDoPacote,
   ehErroDiagnostico,
   type OrigemImagem,

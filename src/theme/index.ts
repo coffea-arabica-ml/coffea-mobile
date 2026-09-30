@@ -19,3 +19,6 @@ export const raios = {
 
 /** Margem lateral padrão das telas. */
 export const MARGEM = 20
+
+/** Largura máxima do conteúdo (tablets): acima disso a coluna fica centralizada. */
+export const LARGURA_CONTEUDO = 640

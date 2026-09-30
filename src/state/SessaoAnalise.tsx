@@ -1,5 +1,6 @@
 import { createContext, use, useCallback, useEffect, useMemo, useReducer, useRef, type ReactNode } from 'react'
 import {
+  copiarParaCache,
   descartarImagem,
   ehCancelamento,
   ehErroDiagnostico,
@@ -48,6 +49,8 @@ type Acao =
   | { tipo: 'concluir'; estado: EstadoEstavel }
   | { tipo: 'cancelar' }
   | { tipo: 'marcarSalva'; id: string | undefined }
+  /** A análise em foco saiu do histórico: passa a usar uma cópia da foto e pode ser salva de novo. */
+  | { tipo: 'desvincular'; uri: string }
 
 function reducer(estado: EstadoSessao, acao: Acao): EstadoSessao {
   switch (acao.tipo) {
@@ -65,6 +68,19 @@ function reducer(estado: EstadoSessao, acao: Acao): EstadoSessao {
       return estado.fase === 'enviando' ? estado.anterior : estado
     case 'marcarSalva':
       return estado.fase === 'sucesso' ? { ...estado, analise: { ...estado.analise, salvaComoId: acao.id } } : estado
+    case 'desvincular': {
+      if (estado.fase !== 'sucesso') return estado
+      const { analise } = estado
+      return {
+        fase: 'sucesso',
+        analise: {
+          ...analise,
+          salvaComoId: undefined,
+          imagem: { ...analise.imagem, uri: acao.uri },
+          diagnostico: { ...analise.diagnostico, imagemUri: acao.uri },
+        },
+      }
+    }
   }
 }
 
@@ -89,8 +105,12 @@ interface ContextoSessao {
   cancelar: () => void
   tentarNovamente: () => void
   abrirAnalise: (analise: AnaliseAtual) => void
-  /** undefined desfaz a marca (a análise foi excluída do histórico). */
-  marcarComoSalva: (id: string | undefined) => void
+  marcarComoSalva: (id: string) => void
+  /**
+   * Chame ANTES de excluir uma análise do histórico: se ela é a que está em foco, a foto é copiada
+   * para o cache (os arquivos do histórico vão ser apagados) e a análise volta a poder ser salva.
+   */
+  desvincularDoHistorico: (id: string) => void
 }
 
 const Contexto = createContext<ContextoSessao | null>(null)
@@ -202,7 +222,24 @@ export function SessaoAnaliseProvider({ children }: { children: ReactNode }) {
     dispatch({ tipo: 'concluir', estado: { fase: 'sucesso', analise } })
   }, [])
 
-  const marcarComoSalva = useCallback((id: string | undefined) => dispatch({ tipo: 'marcarSalva', id }), [])
+  const marcarComoSalva = useCallback((id: string) => dispatch({ tipo: 'marcarSalva', id }), [])
+
+  const analiseSalvaId = estado.fase === 'sucesso' ? estado.analise.salvaComoId : undefined
+  const fotoEmFoco = estado.fase === 'sucesso' ? estado.analise.imagem.uri : null
+  const desvincularDoHistorico = useCallback(
+    (id: string) => {
+      if (analiseSalvaId !== id || !fotoEmFoco) return
+      let uri = fotoEmFoco
+      try {
+        uri = copiarParaCache(fotoEmFoco)
+        fotosPreparadas.current.add(uri)
+      } catch {
+        // sem a cópia a análise continua em foco; só a foto pode deixar de aparecer
+      }
+      dispatch({ tipo: 'desvincular', uri })
+    },
+    [analiseSalvaId, fotoEmFoco],
+  )
 
   const valor = useMemo<ContextoSessao>(
     () => ({
@@ -213,8 +250,9 @@ export function SessaoAnaliseProvider({ children }: { children: ReactNode }) {
       tentarNovamente,
       abrirAnalise,
       marcarComoSalva,
+      desvincularDoHistorico,
     }),
-    [estado, enviarFoto, cancelar, tentarNovamente, abrirAnalise, marcarComoSalva],
+    [estado, enviarFoto, cancelar, tentarNovamente, abrirAnalise, marcarComoSalva, desvincularDoHistorico],
   )
 
   return <Contexto value={valor}>{children}</Contexto>

@@ -18,24 +18,29 @@ nova; é a mesma decisão, com outra forma de carregar.
 
 | Item | coffea-web | coffea-mobile |
 |---|---|---|
-| Fontes | `@fontsource-variable/fraunces`, `@fontsource-variable/instrument-sans` (CSS) | `@expo-google-fonts/fraunces` + `@expo-google-fonts/instrument-sans` + `expo-font`, carregadas com `useFonts` antes de renderizar a árvore principal |
-| Ícones | `lucide-react` | `lucide-react-native` (precisa de `react-native-svg`, versão 12 a 15, como peer dependency) |
-| Cores/tokens | variáveis CSS em `@theme` | constantes TS num `src/theme.ts` (ou `useColorScheme` se o app ganhar modo escuro) — copiar os mesmos valores hex |
-| Animações | CSS + View Transitions | `Animated` ou `react-native-reanimated` para a varredura da lente e as transições de tela |
+| Fontes | `@fontsource-variable/fraunces`, `@fontsource-variable/instrument-sans` (CSS) | `@expo-google-fonts/*` + `expo-font`, carregadas com `useFonts` enquanto a splash segura a tela. Cada peso é importado pelo subcaminho (`@expo-google-fonts/fraunces/600SemiBold`) e é uma família própria (no Android, `fontWeight` não troca o arquivo) — ver `src/theme/tipografia.ts` |
+| Ícones | `lucide-react` | `lucide-react-native` + `react-native-svg` |
+| Cores/tokens | variáveis CSS em `@theme` | `src/theme/` — mesmos hex, sombras copiadas via `boxShadow` do RN (New Architecture), raio 24 |
+| Animações | CSS + View Transitions | `react-native-reanimated` 4 com as mesmas durações e curvas (`src/theme/movimento.ts`): varredura da lente, zoom círculo → lente, tremida das abas bloqueadas, entrada `surgir` em cascata. Respeitam "Remover animações" do sistema |
+| Imagens | `<img>` | `expo-image` (fade de entrada, fotos grandes); a moldura tem a proporção exata da foto, para os círculos caírem no lugar certo |
 
-## Assets a copiar do coffea-web (mesmos arquivos, não refazer)
+**Diferença conhecida:** as instâncias estáticas da Fraunces não têm o eixo `SOFT 100` que o web usa nos
+títulos (serifas levemente mais "duras"). Se incomodar, dá para gerar uma instância com
+`fonttools varLib.instancer` e carregar pelo `useFonts`.
 
-De `coffea-web/src/assets/` para `coffea-mobile/src/assets/`:
+## Assets
 
-- `logo-cafelens.png`
-- `fundo-1.jpg`, `fundo-2.jpg`, `fundo-3.jpg`
-- `exemplos/planta-cafe-doente.jpg`, `exemplos/planta-cafe-saudavel.jpg`
-- `exemplos/teste-*` (os 10 arquivos de teste — ver `03-contrato-api-mock.md`)
+Copiados de `coffea-web/src/assets/` para `coffea-mobile/src/assets/` (mesmos arquivos):
 
-Os ícones do app (`assets/icon.png`, `assets/adaptive-icon.png`, `assets/splash-icon.png`,
-`assets/favicon.png`) já existem no esqueleto do Expo com os placeholders padrão — esses sim precisam
-ser refeitos com a marca Cafélens (o `logo-cafelens.png` como base), porque não têm equivalente no
-coffea-web (o navegador não usa ícone de app/splash screen do jeito que um app instalado usa).
+- `logo-cafelens.png` (tem transparência)
+- `fundo-1.jpg`, `fundo-2.jpg`, `fundo-3.jpg` — a landing usa o `fundo-1`
+- `exemplos/planta-cafe-doente.jpg`, `exemplos/planta-cafe-saudavel.jpg` — "Experimente com um exemplo"
+- `exemplos/teste-*` (as 10 fixtures) — só no painel de dev, fora do bundle de produção
+
+Em `assets/` (raiz) ficam só os arquivos que o `app.json` usa, gerados a partir do logo em 30/09/2026:
+`icon.png` (logo sobre o papel `#f5f3ec`), `adaptive-icon.png` (logo na zona segura),
+`adaptive-icon-monochrome.png` (ícone temático do Android 13+), `splash-icon.png` (splash sobre
+`#f5f3ec`) e `favicon.png`. Se a Frente 4 produzir ícones próprios, basta substituir os arquivos.
 
 ## O único ponto ainda não resolvido (igual ao web)
 

@@ -22,7 +22,7 @@ import { cores, raios, sombras } from '../theme'
 /** T10 — análises salvas; abrir uma leva ao Resumo técnico sem reprocessar. */
 export function AbaHistorico({ navigation, route }: PropsAba<'Historico'>) {
   const { itens, carregar, excluir } = useHistorico()
-  const { abrirAnalise, analise, marcarComoSalva } = useSessaoAnalise()
+  const { abrirAnalise, desvincularDoHistorico } = useSessaoAnalise()
   const avisar = useToast()
   const rolagem = useRef<ScrollView>(null)
   const posicoes = useRef(new Map<string, number>())
@@ -66,9 +66,9 @@ export function AbaHistorico({ navigation, route }: PropsAba<'Historico'>) {
         style: 'destructive',
         onPress: async () => {
           try {
+            // A análise em foco pode ser justamente a excluída: ela continua na tela e volta a poder ser salva.
+            desvincularDoHistorico(item.id)
             await excluir(item.id)
-            // A análise em foco pode ser justamente a excluída: ela volta a poder ser salva.
-            if (analise?.salvaComoId === item.id) marcarComoSalva(undefined)
             avisar(`“${item.titulo}” foi excluída.`)
           } catch {
             avisar('Não foi possível excluir agora. Tente de novo.')

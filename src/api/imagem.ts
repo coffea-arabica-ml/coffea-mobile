@@ -155,6 +155,16 @@ export async function prepararImagem(arquivo: ArquivoVerificado): Promise<Imagem
   }
 }
 
+/**
+ * Copia uma foto (ex.: a do histórico) para o cache, para ela continuar existindo depois que o
+ * original for apagado. Devolve a nova URI.
+ */
+export function copiarParaCache(uri: string): string {
+  const destino = new File(Paths.cache, `cafelens-${Date.now().toString(36)}.jpg`)
+  new File(uri).copy(destino)
+  return destino.uri
+}
+
 /** Apaga uma foto preparada que ninguém mais usa. Só mexe no cache: fotos do histórico ficam. */
 export function descartarImagem(uri: string): void {
   try {

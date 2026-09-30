@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 import { FlaskConical, type LucideIcon } from 'lucide-react-native'
 import { modoApi } from '../api'
 import { AVISO_DEMONSTRACAO } from '../content/textos'
-import { cores, MARGEM, raios } from '../theme'
+import { cores, LARGURA_CONTEUDO, MARGEM, raios } from '../theme'
 import { Logo } from './Logo'
 import { Texto } from './Texto'
 import { useToast } from './Toast'
@@ -101,6 +101,9 @@ export const TelaHub = forwardRef<ScrollView, PropsTela>(function TelaHub({ chil
 const estilos = StyleSheet.create({
   tela: { flex: 1, backgroundColor: cores.papel },
   cabecalho: {
+    width: '100%',
+    maxWidth: LARGURA_CONTEUDO + 2 * MARGEM,
+    alignSelf: 'center',
     height: 56,
     paddingHorizontal: MARGEM,
     flexDirection: 'row',
@@ -118,7 +121,15 @@ const estilos = StyleSheet.create({
     borderWidth: 1,
     borderColor: cores.cereja100,
   },
-  conteudo: { paddingHorizontal: MARGEM, paddingTop: 8, paddingBottom: 40, gap: 24 },
+  conteudo: {
+    width: '100%',
+    maxWidth: LARGURA_CONTEUDO + 2 * MARGEM,
+    alignSelf: 'center',
+    paddingHorizontal: MARGEM,
+    paddingTop: 8,
+    paddingBottom: 40,
+    gap: 24,
+  },
   titulo: { gap: 10 },
   sobretitulo: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 })

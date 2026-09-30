@@ -17,7 +17,7 @@ import { problemasDe } from '../../domain/analise'
 import type { PropsVisualizacao } from '../../navigation/tipos'
 import { useExigeAnalise } from '../../navigation/useExigeAnalise'
 import type { AnaliseAtual } from '../../state/SessaoAnalise'
-import { cores, MARGEM, raios } from '../../theme'
+import { cores, LARGURA_CONTEUDO, MARGEM, raios } from '../../theme'
 
 /** T8 — um problema de perto: a folha ampliada, o que é, como cuidar e como prevenir. */
 export function DetalheProblema({ navigation, route }: PropsVisualizacao<'DetalheProblema'>) {
@@ -178,7 +178,15 @@ function PaginaFolha({ analise, folha, numero, total, largura, animarEntrada, ao
 }
 
 const estilos = StyleSheet.create({
-  pagina: { paddingHorizontal: MARGEM, paddingTop: 12, paddingBottom: 40, gap: 24 },
+  pagina: {
+    width: '100%',
+    maxWidth: LARGURA_CONTEUDO + 2 * MARGEM,
+    alignSelf: 'center',
+    paddingHorizontal: MARGEM,
+    paddingTop: 12,
+    paddingBottom: 40,
+    gap: 24,
+  },
   lente: { gap: 18, paddingTop: 12, alignItems: 'center' },
   centro: { textAlign: 'center' },
   grupo: { gap: 10 },

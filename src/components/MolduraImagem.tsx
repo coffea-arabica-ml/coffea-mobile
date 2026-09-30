@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native'
 import { Image } from 'expo-image'
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
-import { cores, MARGEM, raios } from '../theme'
+import { cores, LARGURA_CONTEUDO, MARGEM, raios } from '../theme'
 
 export type StatusMoldura = 'neutro' | 'saudavel' | 'problema'
 
@@ -50,7 +50,7 @@ export function MolduraImagem({
   const { width: larguraTela } = useWindowDimensions()
   const [proporcaoMedida, setProporcaoMedida] = useState<number | null>(null)
   const proporcao = proporcaoConhecida ?? proporcaoMedida ?? 3 / 4
-  const disponivel = (larguraDisponivel ?? larguraTela - 2 * MARGEM) - 2 * (ANEL + FOLGA)
+  const disponivel = (larguraDisponivel ?? Math.min(larguraTela - 2 * MARGEM, LARGURA_CONTEUDO)) - 2 * (ANEL + FOLGA)
   const largura = Math.min(disponivel, alturaMaxima * proporcao)
   const altura = largura / proporcao
 

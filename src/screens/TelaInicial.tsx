@@ -14,7 +14,7 @@ import { Texto } from '../components/Texto'
 import { AVISO_AGRONOMICO } from '../content/textos'
 import type { PropsRaiz } from '../navigation/tipos'
 import { marcarBoasVindasVistas } from '../state/preferencias'
-import { comAlfa, cores, curvas, duracoes, fontes, MARGEM } from '../theme'
+import { comAlfa, cores, curvas, duracoes, fontes, LARGURA_CONTEUDO, MARGEM } from '../theme'
 
 const PASSOS = [
   { titulo: 'Fotografe a planta', texto: 'Uma foto do cafeeiro inteiro, pela câmera ou da galeria.' },
@@ -187,7 +187,15 @@ const estilos = StyleSheet.create({
     height: 22,
     backgroundColor: comAlfa(cores.branco, 0.65),
   },
-  conteudo: { paddingHorizontal: MARGEM + 4, paddingBottom: 24, justifyContent: 'flex-end', gap: 40 },
+  conteudo: {
+    width: '100%',
+    maxWidth: LARGURA_CONTEUDO + 2 * MARGEM,
+    alignSelf: 'center',
+    paddingHorizontal: MARGEM + 4,
+    paddingBottom: 24,
+    justifyContent: 'flex-end',
+    gap: 40,
+  },
   chamada: { gap: 18 },
   acoes: { gap: 12, marginTop: 10 },
   passos: { gap: 16, paddingTop: 26, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: comAlfa(cores.branco, 0.2) },

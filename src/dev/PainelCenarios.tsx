@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { File, Paths } from 'expo-file-system'
+import { useFocusEffect } from '@react-navigation/native'
+import { setStatusBarStyle } from 'expo-status-bar'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Check, FlaskConical, X } from 'lucide-react-native'
 import { origemDoPacote, type OrigemImagem } from '../api'
@@ -80,6 +82,13 @@ export function PainelCenarios({ navigation }: PropsRaiz<'PainelCenarios'>) {
   const avisar = useToast()
   const [cenario, setCenario] = useState<CenarioId | null>(obterCenarioForcado)
   const [atraso, setAtraso] = useState<number | null>(obterAtrasoForcado)
+
+  useFocusEffect(
+    useCallback(() => {
+      setStatusBarStyle('light')
+      return () => setStatusBarStyle('dark')
+    }, []),
+  )
 
   async function enviarFixture(fixture: Fixture) {
     const { nome } = fixture

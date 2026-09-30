@@ -16,8 +16,49 @@ Dentro da aba "Visualização avançada" fica uma pilha (`@react-navigation/nati
 `VisualizacaoLista → DetalheProblema`, para o "toca no círculo → tela de detalhe com botão voltar"
 funcionar com a transição e o gesto nativos de push/pop, em vez de uma transição CSS como no web.
 
-"Salvar análise" é uma tela com `presentation: 'modal'` na pilha, empilhada por cima de onde o usuário
-estiver (Resumo, Visualização ou Detalhe) — equivalente ao `<dialog>` do web, mas como modal nativo.
+"Salvar análise" é uma tela da pilha raiz com `presentation: 'transparentModal'`, empilhada por cima
+de onde o usuário estiver (Resumo, Visualização ou Detalhe): um cartão sobre o fundo escurecido, como no
+Figma, que sobe junto com o teclado. É o equivalente ao `<dialog>` do web.
+
+## Como foi implementado (Frente 5, 30/09/2026)
+
+| Tela | Rota | Arquivo |
+|---|---|---|
+| T1 Inicial | `Inicial` (1º acesso) e `Sobre` (fullScreenModal) | `screens/TelaInicial.tsx` |
+| T2–T5 Enviar (vazio, carregando, sucesso, erros) | aba `Enviar` | `screens/AbaEnviar.tsx` |
+| T6 Resumo técnico | aba `Resumo` | `screens/AbaResumo.tsx` |
+| T7 Visualização avançada | aba `Visualizacao` → `VisualizacaoLista` | `screens/visualizacao/VisualizacaoLista.tsx` |
+| T8 Detalhe de um problema | `DetalheProblema` (push na pilha da aba) | `screens/visualizacao/DetalheProblema.tsx` |
+| T9 Salvar análise | `SalvarAnalise` (transparentModal) | `screens/ModalSalvarAnalise.tsx` |
+| T10 Histórico | aba `Historico` | `screens/AbaHistorico.tsx` |
+
+Decisões que completam ou mudam o que está descrito abaixo:
+
+- **T1 só no primeiro acesso.** Depois, o app abre direto no hub; tocar no logo do cabeçalho reabre a
+  mesma tela como "Sobre o Cafélens" (modal com botão fechar). O painel de dev permite rever.
+- **Abas bloqueadas:** cadeado no ícone; tocar treme, vibra e mostra "Envie uma foto para liberar esta
+  seção". Durante uma análise, a aba Enviar mostra um spinner.
+- **Nova foto a partir do Resumo:** leva à aba Enviar, onde o carregamento aparece. Enquanto a análise
+  roda, Resumo e Visualização voltam a ficar bloqueados; Cancelar restaura a análise anterior.
+- **Tirar foto / Galeria:** câmera pede permissão (negada de vez → atalho para os Ajustes); a galeria
+  usa o seletor do sistema, que não precisa de permissão. Se o Android encerrar o app enquanto a câmera
+  está aberta, a foto pendente é recuperada ao voltar (`getPendingResultAsync`).
+- **T3:** a própria foto com uma lente circular que passeia sobre ela e uma linha de varredura; aviso
+  depois de ~6 s; Cancelar.
+- **T4/T5:** anel verde/cereja com rótulo em texto, vibração e anúncio para leitores de tela. No erro
+  desconhecido, "Tentar de novo" reenvia a mesma foto já preparada.
+- **T6:** cada folha da ficha é tocável e abre direto o Detalhe dela (navegando para a aba
+  Visualização, com a lista embaixo na pilha).
+- **T7:** círculos numerados entram em cascata; tocar num círculo ou numa linha da lista destaca os
+  dois. As 4 variações são decididas por `domain/visualizacao.ts`.
+- **T8:** a lente abre com a foto inteira e dá zoom até a folha tocada (equivalente nativo da View
+  Transition do web). Deslizar para o lado troca de folha; os botões "Folha N" continuam para
+  acessibilidade. O botão voltar do cabeçalho se chama "Foto inteira".
+- **T10:** lista de uma coluna. Excluir: botão sobre a miniatura, toque longo ou ação de
+  acessibilidade, sempre com confirmação nativa. Excluir a análise em foco mantém ela na tela (a foto é
+  copiada antes) e ela volta a poder ser salva.
+- **Selo "Demonstração"** no cabeçalho enquanto o mock estiver ativo; em desenvolvimento, tocar nele
+  abre o painel de cenários.
 
 ## Telas
 
