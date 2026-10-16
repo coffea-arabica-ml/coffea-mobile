@@ -26,20 +26,29 @@ Todo texto visível no app usa "Cafélens", inclusive o `name` do `app.json`, qu
 nos pedidos de permissão e na lista de apps recentes. O `slug` (`coffea-mobile`) e o
 `package`/`bundleIdentifier` (`com.coffeaarabicaml.cafelens`) são identificadores técnicos.
 
-## Fase atual: app completo contra o mock local, sem depender do backend real
+## Fase atual: o backend real existe; o mock continua sendo o padrão
 
-Mesmo modelo "em escada" do `coffea-web`: o `coffea-backend` ainda é um esqueleto com resposta
-simulada, e a Frente 9 (Modelagem) não confirmou se a detecção individual de folhas (RF09) é viável no
-prazo. **Por isso o app é construído inteiro contra um serviço mock local**, isolado em `src/api/`,
-seguindo o contrato de `docs/frontend-reference/03-contrato-api-mock.md`. Quando o backend real
-estiver pronto, só essa pasta muda (o adapter `http.ts` já existe e converte o formato atual).
+- O `coffea-backend` (commit `0e33bce`) roda a inferência real do `coffea-ml` no `POST /diagnostico` e
+  devolve o contrato de `docs/frontend-reference/03-contrato-api-mock.md`. O `coffea-web` foi testado de
+  ponta a ponta contra ele em 16/10/2026, e o `src/api/` deste app foi ajustado da mesma forma: o
+  `http.ts` repassa o contrato, com 413 e 415 tratados pelo código HTTP.
+- **O app ainda não foi testado no celular contra o backend real.** Como subir o backend e apontar o app
+  para ele: `README.md`, "Mock ou backend real".
+- **O mock local continua sendo o modo padrão** (`EXPO_PUBLIC_API_MODE=mock`), para trabalhar sem backend e
+  para exercitar estados que o modelo raramente produz (ex.: `especie_incorreta`, folha sem `regiao`).
+- Toda suposição sobre a resposta segue isolada em `src/api/`: se o backend mudar, só essa pasta muda.
+- A URL de produção do backend depende do deploy (Frente 10).
 
-## Pendência crítica que afeta toda a Frente 5 (leia antes de decidir estrutura de dados)
+## RF09 e o formato de dados (leia antes de decidir estrutura de dados)
 
-Igual ao `coffea-web`: o RF09 foi elevado a Essencial na v4 dos Requisitos, mas o dataset BRACOL não
-sustenta detecção de múltiplas folhas numa foto, e isso pode virar mudança de escopo sujeita a
-aprovação do professor. O contrato trata a resposta como uma **lista de folhas** (0, 1 ou N), cada
-uma com localização (`regiao`) **opcional** — nenhum componente supõe que sempre existe uma
+Igual ao `coffea-web`: o RF09 foi elevado a Essencial na v4 dos Requisitos, e a Frente 3 tinha registrado
+que o dataset BRACOL não sustenta sozinho a detecção de múltiplas folhas numa foto (só tem folhas já
+recortadas). Hoje o `coffea-ml` tem um detector de folhas, e o backend devolve a **lista de folhas**, cada
+uma com `regiao` (centro e raio relativos à foto).
+
+O contrato continua tratando a resposta como uma **lista de folhas** (0, 1 ou N), cada uma com localização
+(`regiao`) **opcional**: uma foto de uma folha só volta como 1 folha, o normalizador descarta região
+inválida, e o mock ainda produz folhas sem coordenadas. Nenhum componente supõe que sempre existe uma
 localização nem que sempre existe mais de uma folha (ver `src/domain/visualizacao.ts`).
 
 ## SDK, Expo Go e como rodar (decidido em 30/09/2026)
@@ -72,7 +81,7 @@ localização nem que sempre existe mais de uma folha (ver `src/domain/visualiza
 - Histórico local (RF05): `@react-native-async-storage/async-storage` para metadados e
   `expo-file-system` (API nova: `File`, `Directory`, `Paths`) para as imagens em `Paths.document`.
 - Também: `expo-haptics`, `expo-linear-gradient`, `expo-splash-screen`, `expo-asset`.
-- Testes: `jest-expo`, só para lógica pura (`src/api`, `src/domain`).
+- Testes: `jest-expo`, só para lógica pura (`src/api`, `src/domain`, `src/content`).
 - Variáveis de ambiente: `EXPO_PUBLIC_API_MODE` (mock|http, padrão mock) e `EXPO_PUBLIC_API_URL`.
 - Hermes não tem `DOMException` nem `crypto.randomUUID`, e o `AbortSignal` do RN não tem
   `timeout`/`any`/`throwIfAborted`: use `src/api/cancelamento.ts` e `src/api/id.ts`.

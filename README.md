@@ -4,8 +4,9 @@ Versão mobile (Expo / React Native) do Cafélens: fotografe um cafeeiro e veja,
 de ferrugem, bicho-mineiro, cercosporiose e phoma, com a severidade estimada. É o mesmo produto do
 `coffea-web`, com navegação, câmera e armazenamento nativos.
 
-Enquanto o `coffea-backend` e o modelo não estão prontos, o app roda contra um **mock local**
-(`src/api/mock/`) — os resultados são simulados, e o selo "Demonstração" no topo avisa isso.
+Por padrão, o app roda contra um **mock local** (`src/api/mock/`): os resultados são simulados, e o selo
+"Demonstração" no topo avisa isso. Ele também pode enviar a foto ao `coffea-backend` real, que roda o
+modelo do `coffea-ml` (ver "Mock ou backend real"). Esse modo ainda não foi testado no celular.
 
 ## Stack
 
@@ -33,14 +34,32 @@ O Expo Go das lojas só abre o SDK mais recente, e este projeto usa o SDK 54. Po
 
 ## Mock ou backend real
 
-Copie `.env.example` para `.env` se quiser mudar o modo:
+Por padrão (`EXPO_PUBLIC_API_MODE=mock`) o app **não precisa** do backend. Para usar o `coffea-backend`
+real (`POST /diagnostico`, com o modelo do `coffea-ml`):
 
-- `EXPO_PUBLIC_API_MODE=mock` (padrão): não precisa do backend.
-- `EXPO_PUBLIC_API_MODE=http`: envia a foto para `EXPO_PUBLIC_API_URL`. Use o **IP local** da máquina
-  que roda o `coffea-backend` (descubra com `ipconfig`), nunca `localhost` — o celular é outro aparelho.
-  Rode o backend com `--host 0.0.0.0`.
+1. Deixe os repositórios lado a lado (`coffea-arabica-ml/coffea-mobile`, `coffea-backend` e `coffea-ml`,
+   com os pesos do modelo) e suba o backend conforme o README dele, **com `--host 0.0.0.0`** — sem isso,
+   ele só aceita conexões do próprio PC. Ele escuta na porta 8000.
+2. Espere `http://localhost:8000/`, no navegador do PC, mostrar `"carregado": true` no bloco `modelo`
+   (alguns segundos; se vier `false`, o campo `motivo` diz por quê, e o diagnóstico responde 503).
+3. Descubra o **IP local** do PC com `ipconfig` (o "Endereço IPv4" do Wi-Fi). Não use `localhost`: o
+   celular é outro aparelho.
+4. Copie `.env.example` para `.env` e preencha, com o seu IP:
+   ```
+   EXPO_PUBLIC_API_MODE=http
+   EXPO_PUBLIC_API_URL=http://192.168.0.15:8000
+   ```
+5. Libere a porta 8000 no firewall do Windows: siga a seção "Celular na mesma rede: firewall do Windows"
+   do README do `coffea-backend` (regra só no perfil Privado, removida depois da apresentação).
+6. Deixe o celular e o PC na **mesma rede Wi-Fi**, sem isolamento de clientes (comum em rede de
+   faculdade: um aparelho não enxerga o outro; nesse caso, use o hotspot do celular ou outra rede). Para
+   conferir, abra `http://<IP do PC>:8000/` no navegador do celular.
+7. Reinicie o `npx expo start` depois de mudar o `.env`.
 
-Depois de mudar o `.env`, reinicie o `npx expo start`.
+O `--tunnel` só leva o app ao celular; a chamada ao backend continua indo direto ao IP do PC. O backend faz
+uma inferência por vez; com fila, o app mostra o aviso de demora. O APK de apresentação (perfil `preview`)
+é gerado com `EXPO_PUBLIC_API_MODE=mock` no `eas.json`, e usar o backend no APK ainda não foi verificado.
+O contrato e os códigos HTTP estão em `docs/frontend-reference/03-contrato-api-mock.md`.
 
 ## Painel de cenários (só em desenvolvimento)
 
@@ -58,7 +77,7 @@ O painel e as fixtures não entram no APK de produção.
 
 ```bash
 npm run typecheck   # tsc --noEmit
-npm test            # jest-expo: api/ e domain/ (normalização, mock, formato, geometria, resumo)
+npm test            # jest-expo: api/, domain/ e content/ (normalização, http, mock, formato, geometria, resumo, textos de erro)
 ```
 
 Para conferir se o bundle compila sem precisar de celular:
@@ -115,5 +134,4 @@ src/dev/         painel de cenários (só em desenvolvimento)
 
 ## Contribuindo
 
-Mesmas regras do coffea-web: branch por tarefa, commits no imperativo, PR obrigatório antes de merge na
-`main`.
+Trabalhamos direto na `main`, sem branch nem PR (decisão do gestor, 16/10/2026). Commits no imperativo.

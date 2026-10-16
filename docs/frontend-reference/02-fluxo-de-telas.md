@@ -96,6 +96,8 @@ Decisões que completam ou mudam o que está descrito abaixo:
 - (b) Sem regiões: mesma informação, sem posicionamento (lista simples).
 - (c) Mista: círculos só onde houver região.
 - (d) Saudável: foto, "nada identificado", orientação de cuidado geral, botão Salvar.
+- Depende da localização por folha do RF09: o backend já devolve `regiao`, mas as variações (b) e (c)
+  continuam valendo quando ela falta (ver `01-requisitos-frontend.md`).
 
 ### T8 — Detalhe de um problema
 - Tela empilhada (push) a partir de um toque no círculo. Foto ampliada na região (lente), nome da

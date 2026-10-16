@@ -18,7 +18,7 @@ Fonte de verdade: documento-mestre da Frente 3. Este arquivo é um recorte, filt
 | RF05 | Manter histórico dos diagnósticos realizados por folha, consultável depois. | Desejável | Tela "Histórico", aba do hub; persistido localmente no dispositivo. |
 | RF06 | Aceitar envio da imagem por câmera do dispositivo ou seleção de arquivo/galeria existente. Sempre uma imagem estática por vez (nunca vídeo contínuo). | Essencial | No mobile, os dois caminhos passam por `expo-image-picker` — não há distinção "desktop vs. celular" como no web. |
 | RF07 | Sinalizar quando a imagem tiver baixa probabilidade de conter planta de café diagnosticável (confiança abaixo de limiar a definir pela Modelagem), sugerindo reenvio. | Desejável | Limiar exato ainda não definido — tratar como mais um estado/erro possível. |
-| RF09 | Identificar individualmente cada folha visível na planta e gerar diagnóstico separado por folha, em vez de tratar múltiplas folhas como erro. | **Essencial (elevado de Desejável)** | ⚠️ Ver pendência técnica abaixo — ainda não confirmado como tecnicamente viável no prazo. |
+| RF09 | Identificar individualmente cada folha visível na planta e gerar diagnóstico separado por folha, em vez de tratar múltiplas folhas como erro. | **Essencial (elevado de Desejável)** | Ver a situação da pendência técnica abaixo: o backend já devolve a lista de folhas com região. |
 
 ## Requisitos Não Funcionais relevantes
 
@@ -43,11 +43,16 @@ estados no total. Siga a mesma lista aqui, para os dois apps tratarem erro do me
 5. **Baixa confiança (RF07)** — o modelo não tem confiança suficiente de que a imagem é diagnosticável.
 6. **Erro desconhecido** — catch-all para falhas não previstas (rede, servidor, etc.).
 
-## ⚠️ Pendência técnica crítica (RF09)
+## Pendência técnica do RF09
 
 Mesma pendência do `coffea-web`: o dataset BRACOL só tem folhas recortadas individualmente, sem foto de
-planta inteira nem anotação de localização de múltiplas folhas. Nenhuma frente confirmou ainda um
-caminho técnico viável no prazo — pode virar mudança de escopo sujeita à aprovação do professor.
+planta inteira nem anotação de localização de múltiplas folhas. A Frente 3 registrou isso como pendência
+que podia configurar mudança de escopo sujeita à aprovação do professor.
+
+**Situação em 16/10/2026:** o `coffea-ml` tem um detector de folhas, e o `coffea-backend` (commit
+`0e33bce`) devolve a lista de folhas da foto, cada uma com `regiao` (ver `03-contrato-api-mock.md`). O
+`coffea-web` foi testado de ponta a ponta contra esse backend; este app ainda não foi testado no celular
+contra ele.
 
 **Na prática para este repositório:** construa a UI de resultado assumindo uma **lista** de folhas (0,
 1 ou N), nunca um objeto fixo. Não trave a Visualização avançada à existência de coordenadas — se
