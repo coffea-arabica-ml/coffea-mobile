@@ -42,8 +42,8 @@ export const ERROS: Record<TipoErroUpload, TextoErro> = {
     sugestao: 'Confira se a foto é do cafeeiro certo e envie novamente.',
   },
   arquivo_muito_grande: {
-    rotulo: 'Arquivo grande demais',
-    titulo: 'Essa foto passa do limite de 10 MB',
+    rotulo: 'Acima do limite',
+    titulo: 'Essa foto é grande demais',
     explicacao: 'Arquivos muito grandes demoram para enviar e não melhoram o diagnóstico.',
     sugestao: 'Tire uma nova foto pela câmera do app — ela já sai num tamanho que funciona.',
   },
@@ -58,8 +58,16 @@ export const ERROS: Record<TipoErroUpload, TextoErro> = {
     rotulo: 'Algo deu errado',
     titulo: 'Não foi possível analisar agora',
     explicacao: 'Tivemos um problema de conexão ou no servidor. Sua foto não tem nada de errado.',
-    sugestao: 'Verifique sua internet e tente de novo em alguns instantes.',
+    sugestao: 'Se o problema continuar, verifique sua conexão ou volte daqui a pouco.',
   },
+}
+
+/** Tipos em que a mensagem de src/api diz mais que o texto genérico: qual formato, qual limite, o que falhou. */
+const MOSTRA_MENSAGEM: ReadonlySet<TipoErroUpload> = new Set(['formato_invalido', 'arquivo_muito_grande', 'erro_desconhecido'])
+
+/** Explicação da tela de erro: a mensagem de src/api quando ela diz mais; sem ela, a explicação padrão do tipo. */
+export function explicacaoDoErro(tipo: TipoErroUpload, mensagem: string): string {
+  return MOSTRA_MENSAGEM.has(tipo) && mensagem ? mensagem : ERROS[tipo].explicacao
 }
 
 export const AVISO_AGRONOMICO = 'O Cafélens é uma ferramenta de apoio e não substitui a avaliação de um engenheiro agrônomo.'

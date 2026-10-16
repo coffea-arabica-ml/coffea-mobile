@@ -29,7 +29,7 @@ import { TelaHub, Titulo } from '../components/TelaHub'
 import { Texto } from '../components/Texto'
 import { useToast } from '../components/Toast'
 import { VarreduraLente } from '../components/VarreduraLente'
-import { CAPTURA, ERROS } from '../content/textos'
+import { CAPTURA, ERROS, explicacaoDoErro } from '../content/textos'
 import { estaSaudavel } from '../domain/analise'
 import { resumirDiagnostico } from '../domain/resumo'
 import type { PropsAba } from '../navigation/tipos'
@@ -320,8 +320,8 @@ function EstadoErro({ falha }: { falha: FalhaAnalise }) {
       <Animated.View entering={surgir(1)} style={estilos.grupo} accessibilityRole="alert">
         <Titulo sobretitulo="Não foi possível analisar">{texto.titulo}</Titulo>
         <Texto tipo="corpoGrande" cor={cores.tintaSuave}>
-          {/* A verificação local diz qual formato recebeu (ex.: GIF); é mais útil que o texto genérico. */}
-          {tipo === 'formato_invalido' && mensagem ? mensagem : texto.explicacao}
+          {/* Sem mensagem (ex.: falha de conexão), fica a explicação padrão do tipo. */}
+          {explicacaoDoErro(tipo, mensagem)}
         </Texto>
         <Texto tipo="corpo" peso="medio">
           {texto.sugestao}

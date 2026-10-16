@@ -33,7 +33,8 @@ export const MENSAGENS_ERRO: Record<TipoErroUpload, string> = {
   especie_incorreta: 'A planta detectada não é um cafeeiro.',
   arquivo_muito_grande: 'O arquivo excede o tamanho máximo permitido.',
   baixa_confianca: 'Confiança da detecção abaixo do limiar.',
-  erro_desconhecido: 'Falha simulada no servidor (HTTP 500).',
+  // O mesmo texto do 500 do coffea-backend: esta mensagem aparece na tela.
+  erro_desconhecido: 'Erro inesperado no servidor. Tente de novo em instantes.',
 }
 
 type FolhaBase = Omit<FolhaDiagnostico, 'id'>

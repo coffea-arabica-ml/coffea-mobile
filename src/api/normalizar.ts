@@ -80,17 +80,16 @@ export function normalizarSucesso(bruto: Record<string, unknown>, imagemUri: str
 
 /**
  * Fronteira de confiança: toda resposta (mock ou backend real) passa por aqui antes de chegar
- * às telas. Qualquer coisa fora do contrato vira um formato válido ou um erro desconhecido.
+ * às telas. Qualquer coisa fora do contrato vira um formato válido ou um erro desconhecido (sem
+ * mensagem: a tela usa o próprio texto).
  */
 export function normalizarResposta(bruta: unknown, imagemUri: string): DiagnosticoResponse {
-  if (!ehObjeto(bruta)) {
-    return { status: 'erro', tipo: 'erro_desconhecido', mensagem: 'Resposta vazia ou inválida do servidor.' }
-  }
+  if (!ehObjeto(bruta)) return { status: 'erro', tipo: 'erro_desconhecido', mensagem: '' }
   if (bruta.status === 'erro') {
     const tipo = TIPOS_ERRO.find((t) => t === bruta.tipo) ?? 'erro_desconhecido'
     const mensagem = textoOpcional(bruta.mensagem) ?? ''
     return { status: 'erro', tipo, mensagem }
   }
   if (bruta.status === 'sucesso') return normalizarSucesso(bruta, imagemUri)
-  return { status: 'erro', tipo: 'erro_desconhecido', mensagem: 'Resposta fora do formato esperado.' }
+  return { status: 'erro', tipo: 'erro_desconhecido', mensagem: '' }
 }

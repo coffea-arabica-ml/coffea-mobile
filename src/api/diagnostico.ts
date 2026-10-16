@@ -29,10 +29,8 @@ export async function enviarImagemParaDiagnostico(
     return normalizarResposta(bruta, imagem.uri)
   } catch (e) {
     if (ehCancelamento(e) || signal?.aborted) throw new ErroCancelado()
-    return {
-      status: 'erro',
-      tipo: 'erro_desconhecido',
-      mensagem: e instanceof Error ? e.message : 'Falha inesperada ao analisar a imagem.',
-    }
+    // O texto da exceção (às vezes técnico ou em inglês) fica no console, não na tela.
+    console.error('[Cafélens] falha inesperada no diagnóstico', e)
+    return { status: 'erro', tipo: 'erro_desconhecido', mensagem: 'Ocorreu uma falha inesperada ao analisar a foto.' }
   }
 }

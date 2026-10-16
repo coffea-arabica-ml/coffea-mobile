@@ -2,13 +2,10 @@ import { Pressable, StyleSheet, View } from 'react-native'
 import Animated, { ZoomIn } from 'react-native-reanimated'
 import type { FolhaDiagnostico, RegiaoFolha } from '../api'
 import { CATEGORIAS } from '../content/categorias'
-import { circuloNaFoto } from '../domain/geometria'
+import { CIRCULO, circuloNaFoto, seloDoCirculo } from '../domain/geometria'
 import { ROTULO_SEVERIDADE } from '../domain/severidade'
 import { curvas } from '../theme'
 import { NumeroFolha } from './LinhaFolha'
-
-/** Menor círculo desenhado; o toque ainda ganha folga (hitSlop) até ~48 pt. */
-const DIAMETRO_MINIMO = 36
 
 interface Props {
   folha: FolhaDiagnostico & { regiao: RegiaoFolha }
@@ -28,7 +25,7 @@ interface Props {
 export function CirculoFolha({ folha, numero, largura, altura, ordem, destacada, outraDestacada, aoPressionar, aoDestacar }: Props) {
   const info = CATEGORIAS[folha.categoria]
   const { centroX, centroY, diametro: bruto } = circuloNaFoto(folha.regiao, largura, altura)
-  const diametro = Math.max(bruto, DIAMETRO_MINIMO)
+  const diametro = Math.max(bruto, CIRCULO.diametroMinimo)
   const folga = Math.max(0, (48 - diametro) / 2)
 
   return (
@@ -55,8 +52,9 @@ export function CirculoFolha({ folha, numero, largura, altura, ordem, destacada,
           outraDestacada && estilos.apagado,
         ]}
       >
-        <View style={estilos.numero}>
-          <NumeroFolha numero={numero} cor={info.cor} tamanho={24} />
+        {/* Sobre o contorno, no alto à direita, sem sair da foto (ver seloDoCirculo). */}
+        <View style={[estilos.numero, seloDoCirculo(folha.regiao, largura, altura)]}>
+          <NumeroFolha numero={numero} cor={info.cor} tamanho={CIRCULO.selo} />
         </View>
       </Pressable>
     </Animated.View>
@@ -68,17 +66,15 @@ const estilos = StyleSheet.create({
   acima: { zIndex: 2 },
   circulo: {
     flex: 1,
-    borderWidth: 3,
+    borderWidth: CIRCULO.borda,
     boxShadow: '0px 0px 0px 2px rgba(255, 255, 255, 0.9), 0px 4px 18px rgba(0, 0, 0, 0.35)',
   },
-  destacado: { transform: [{ scale: 1.1 }], backgroundColor: 'rgba(255, 255, 255, 0.15)' },
+  destacado: { transform: [{ scale: CIRCULO.escalaDestaque }], backgroundColor: 'rgba(255, 255, 255, 0.15)' },
   apagado: { opacity: 0.55 },
   numero: {
     position: 'absolute',
-    top: -6,
-    right: -6,
-    borderRadius: 14,
-    borderWidth: 2,
+    borderRadius: CIRCULO.selo / 2 + CIRCULO.bordaSelo,
+    borderWidth: CIRCULO.bordaSelo,
     borderColor: '#ffffff',
   },
 })
