@@ -90,6 +90,7 @@ Decisões que completam ou mudam o que está descrito abaixo:
 ### T6 — Resumo técnico
 - Uma ficha por folha: categoria e severidade, com medidor ordinal.
 - Ações: ir para Visualização avançada, Salvar análise, nova análise.
+- Rodapé: data da análise e "Arquivo" (o nome do arquivo da galeria, ou "Foto da câmera").
 
 ### T7 — Visualização avançada (4 variações, igual ao web)
 - (a) Com regiões: círculos tocáveis numerados sobre a foto + lista por categoria.
@@ -108,6 +109,7 @@ Decisões que completam ou mudam o que está descrito abaixo:
 
 ### T9 — Salvar análise (modal)
 - Campo de título, botões Salvar/Cancelar. Teclado abre automaticamente ao focar o campo.
+- Título sugerido "Cafeeiro · 16/10 17:41" (dd/mm hh:mm), editável. Títulos já salvos não mudam.
 
 ### T10 — Histórico
 - Lista (não precisa ser grid de 2 colunas como no web — uma coluna rolável é mais natural em tela
@@ -124,6 +126,8 @@ Decisões que completam ou mudam o que está descrito abaixo:
   "sem câmera, cai pro seletor de arquivo" do desktop do web (todo dispositivo mobile-alvo tem câmera).
 - Grid de histórico vira lista de uma coluna, mais adequada a telas estreitas — mesma informação por
   card.
+- Título sugerido mais curto (o card do Histórico tem uma linha) e "Foto da câmera" no lugar do nome
+  interno da câmera.
 
 ## Mapa de navegação (resumo)
 

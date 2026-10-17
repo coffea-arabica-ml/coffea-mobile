@@ -7,22 +7,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Botao } from '../components/Botao'
 import { Texto } from '../components/Texto'
 import { useToast } from '../components/Toast'
+import { tituloSugerido } from '../content/textos'
 import type { PropsRaiz } from '../navigation/tipos'
 import { useHistorico } from '../state/Historico'
-import { useSessaoAnalise, type AnaliseAtual } from '../state/SessaoAnalise'
+import { useSessaoAnalise } from '../state/SessaoAnalise'
 import { comAlfa, cores, curvas, fontes, raios, sombras } from '../theme'
 
 const LIMITE_TITULO = 60
-
-function tituloSugerido(analise: AnaliseAtual) {
-  const quando = new Date(analise.realizadaEm).toLocaleString('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-  return `Cafeeiro · ${quando}`
-}
 
 /** T9 — dar um título à análise antes de guardá-la no histórico deste aparelho. */
 export function ModalSalvarAnalise({ navigation }: PropsRaiz<'SalvarAnalise'>) {
@@ -31,7 +22,7 @@ export function ModalSalvarAnalise({ navigation }: PropsRaiz<'SalvarAnalise'>) {
   const avisar = useToast()
   const { bottom } = useSafeAreaInsets()
   const campo = useRef<TextInput>(null)
-  const [titulo, setTitulo] = useState(() => (analise ? tituloSugerido(analise) : ''))
+  const [titulo, setTitulo] = useState(() => (analise ? tituloSugerido(analise.realizadaEm) : ''))
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 

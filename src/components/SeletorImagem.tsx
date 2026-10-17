@@ -5,9 +5,12 @@ import type { OrigemImagem } from '../api'
 import { useSessaoAnalise } from '../state/SessaoAnalise'
 import { Botao } from './Botao'
 
-/** Converte o resultado do picker na origem usada pelo fluxo de análise. */
-export function origemDoPicker(asset: ImagePicker.ImagePickerAsset): OrigemImagem {
-  return { uri: asset.uri, nomeArquivo: asset.fileName }
+/**
+ * Converte o resultado do picker na origem usada pelo fluxo de análise. O asset não diz se veio da
+ * câmera ou da galeria: só quem abriu o picker sabe.
+ */
+export function origemDoPicker(asset: ImagePicker.ImagePickerAsset, daCamera = false): OrigemImagem {
+  return { uri: asset.uri, nomeArquivo: asset.fileName, daCamera }
 }
 
 interface Props {
@@ -21,9 +24,9 @@ interface Props {
 export function SeletorImagem({ enfase = 'principal', aoEscolher }: Props) {
   const { enviarFoto } = useSessaoAnalise()
 
-  function receber(resultado: ImagePicker.ImagePickerResult) {
+  function receber(resultado: ImagePicker.ImagePickerResult, daCamera = false) {
     if (resultado.canceled || !resultado.assets[0]) return
-    void enviarFoto(origemDoPicker(resultado.assets[0]))
+    void enviarFoto(origemDoPicker(resultado.assets[0], daCamera))
     aoEscolher?.()
   }
 
@@ -43,7 +46,7 @@ export function SeletorImagem({ enfase = 'principal', aoEscolher }: Props) {
       return
     }
     // quality < 1 recomprime o JPEG da câmera: mesma resolução, arquivo bem abaixo dos 10 MB.
-    receber(await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.85 }))
+    receber(await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.85 }), true)
   }
 
   async function escolherDaGaleria() {

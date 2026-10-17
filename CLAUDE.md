@@ -81,6 +81,9 @@ localização nem que sempre existe mais de uma folha (ver `src/domain/visualiza
   configura o plugin. As animações respeitam "Remover animações" do sistema.
 - Imagens: `expo-image` (exibição), `expo-image-manipulator` (normaliza a foto para JPEG de até
   2048 px — inclusive HEIC do iPhone — e gera foto reduzida/miniatura do histórico).
+  Reduzir a foto a 2048 px no lado maior antes de enviar: decisão do gestor, 16/10/2026. Motivo: em 6
+  fotos, comparadas no PC com o Pillow (que só aproxima a redução do Android), 4 ficaram iguais e 2
+  mudaram ±1 folha saudável; o envio caiu de 3,4 para 0,8 MB e ficou cerca de 15% mais rápido.
 - Histórico local (RF05): `@react-native-async-storage/async-storage` para metadados e
   `expo-file-system` (API nova: `File`, `Directory`, `Paths`) para as imagens em `Paths.document`.
 - Também: `expo-haptics`, `expo-linear-gradient`, `expo-splash-screen`, `expo-asset`.

@@ -70,6 +70,24 @@ export function explicacaoDoErro(tipo: TipoErroUpload, mensagem: string): string
   return MOSTRA_MENSAGEM.has(tipo) && mensagem ? mensagem : ERROS[tipo].explicacao
 }
 
+const doisDigitos = (n: number) => String(n).padStart(2, '0')
+
+/**
+ * Título sugerido ao salvar uma análise: "Cafeeiro · 16/10 17:41", no fuso do aparelho. Curto para caber
+ * na linha única do card do Histórico. Montado à mão: o Intl do Hermes varia entre aparelhos.
+ */
+export function tituloSugerido(realizadaEm: string): string {
+  const d = new Date(realizadaEm)
+  const dia = `${doisDigitos(d.getDate())}/${doisDigitos(d.getMonth() + 1)}`
+  const hora = `${doisDigitos(d.getHours())}:${doisDigitos(d.getMinutes())}`
+  return `Cafeeiro · ${dia} ${hora}`
+}
+
+/** Campo "Arquivo" do Resumo: o nome que a câmera dá à foto não diz nada ao usuário. */
+export function rotuloDoArquivo(imagem: { nomeArquivo: string; daCamera?: boolean }): string {
+  return imagem.daCamera ? 'Foto da câmera' : imagem.nomeArquivo
+}
+
 export const AVISO_AGRONOMICO = 'O Cafélens é uma ferramenta de apoio e não substitui a avaliação de um engenheiro agrônomo.'
 
 export const AVISO_DEMONSTRACAO = {

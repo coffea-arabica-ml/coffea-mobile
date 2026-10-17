@@ -10,6 +10,8 @@ export interface OrigemImagem {
   uri: string
   /** Nome original, quando o sistema informa; nos exemplos e fixtures, o nome do arquivo. */
   nomeArquivo?: string | null
+  /** Tirada pela câmera do app: a tela mostra "Foto da câmera" no lugar do nome interno. Não vai ao backend. */
+  daCamera?: boolean
 }
 
 /** Passou pela checagem rápida: formato aceito e dentro do limite de tamanho. */
@@ -18,6 +20,7 @@ export interface ArquivoVerificado {
   nomeArquivo: string
   tamanhoBytes: number
   formato: FormatoDetectado
+  daCamera?: boolean
 }
 
 /** Foto pronta para análise: decodificada e regravada em JPEG, com lado maior de até 2048 px. */
@@ -30,6 +33,7 @@ export interface ImagemLocal {
   tamanhoBytes: number
   /** Derivada do conteúdo do arquivo original: a mesma foto sempre gera o mesmo resultado simulado. */
   semente: number
+  daCamera?: boolean
 }
 
 export type ResultadoVerificacao =
@@ -87,7 +91,7 @@ export function verificarImagem(origem: OrigemImagem): ResultadoVerificacao {
     return { ok: false, erro: erro('arquivo_muito_grande', mensagem), nomeArquivo, tamanhoBytes }
   }
 
-  return { ok: true, arquivo: { uri: arquivo.uri, nomeArquivo, tamanhoBytes, formato } }
+  return { ok: true, arquivo: { uri: arquivo.uri, nomeArquivo, tamanhoBytes, formato, daCamera: origem.daCamera } }
 }
 
 /** FNV-1a de 32 bits. */
@@ -148,6 +152,7 @@ export async function prepararImagem(arquivo: ArquivoVerificado): Promise<Imagem
       nomeArquivo: arquivo.nomeArquivo,
       tamanhoBytes: arquivo.tamanhoBytes,
       semente,
+      daCamera: arquivo.daCamera,
     }
   } catch {
     // Cabeçalho válido, mas conteúdo corrompido ou truncado.

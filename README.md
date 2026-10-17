@@ -139,13 +139,14 @@ o time preferir outro.
 2. Abas Resumo e Visualizar com cadeado antes da primeira análise; tocar treme, vibra e avisa.
 3. Exemplo **Com sinais**: carregamento com a lente passeando → borda cereja → Resumo com 2 problemas e
    7 folhas saudáveis → Visualização com os círculos sobre as folhas manchadas → tocar num círculo: a
-   lente dá zoom na folha; deslize para a outra folha → Salvar → Histórico com o card destacado → abrir
-   de novo → excluir.
+   lente dá zoom na folha; deslize para a outra folha → Salvar → Histórico com o card destacado e o título
+   "Cafeeiro · dd/mm hh:mm" inteiro → abrir de novo → excluir.
 4. Exemplo **Saudável**: borda verde; Visualização mostra "Nenhum problema identificado".
 5. Painel: cada um dos 6 erros forçados, os cenários "1 folha sem região" e "N folhas, algumas sem
    região", e as fixtures de formato/tamanho.
 6. Latência de 8 s: o aviso de demora aparece aos 6 s; Cancelar volta ao estado anterior.
-7. Câmera de verdade (inclusive negando a permissão) e uma foto da galeria.
+7. Câmera de verdade (inclusive negando a permissão) e uma foto da galeria. No Resumo, "Arquivo" mostra
+   "Foto da câmera" na câmera e o nome do arquivo na galeria.
 8. Feche o app por completo e abra de novo: o histórico e as miniaturas continuam lá.
 9. Com o TalkBack ligado: os círculos são lidos como "Folha 1: Ferrugem, severidade alta".
 10. Com "Remover animações" ligado e com a fonte do sistema no máximo.

@@ -11,6 +11,7 @@ import { RotuloStatus } from '../components/RotuloStatus'
 import { SeletorImagem } from '../components/SeletorImagem'
 import { TelaHub, Titulo } from '../components/TelaHub'
 import { Texto } from '../components/Texto'
+import { rotuloDoArquivo } from '../content/textos'
 import { estaSaudavel, numerosDosProblemas, problemasDe } from '../domain/analise'
 import { resumirDiagnostico } from '../domain/resumo'
 import type { PropsAba } from '../navigation/tipos'
@@ -99,7 +100,7 @@ export function AbaResumo({ navigation }: PropsAba<'Resumo'>) {
             Arquivo
           </Texto>
           <Texto tipo="pequeno" numberOfLines={1}>
-            {analise.imagem.nomeArquivo}
+            {rotuloDoArquivo(analise.imagem)}
           </Texto>
         </View>
       </Animated.View>

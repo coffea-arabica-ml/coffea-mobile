@@ -28,6 +28,8 @@ interface Registro {
   altura: number
   tamanhoBytes: number
   semente: number
+  /** Ausente nos registros antigos: a tela mostra o nome do arquivo. */
+  daCamera?: boolean
 }
 
 /** Item leve para a lista do histórico. */
@@ -133,6 +135,7 @@ export async function obterAnalise(id: string): Promise<AnaliseCarregada | null>
       nomeArquivo: r.nomeArquivo,
       tamanhoBytes: r.tamanhoBytes,
       semente: r.semente,
+      daCamera: r.daCamera === true,
     },
   }
 }
@@ -168,6 +171,7 @@ export async function salvarAnalise(dados: {
       altura: foto.height,
       tamanhoBytes: dados.imagem.tamanhoBytes,
       semente: dados.imagem.semente,
+      ...(dados.imagem.daCamera ? { daCamera: true } : {}),
     }
     await alterarRegistros((lista) => [registro, ...lista])
     return itemDe(registro)
