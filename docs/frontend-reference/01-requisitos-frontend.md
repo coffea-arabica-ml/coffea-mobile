@@ -51,8 +51,8 @@ que podia configurar mudança de escopo sujeita à aprovação do professor.
 
 **Situação em 16/10/2026:** o `coffea-ml` tem um detector de folhas, e o `coffea-backend` (commit
 `0e33bce`) devolve a lista de folhas da foto, cada uma com `regiao` (ver `03-contrato-api-mock.md`). O
-`coffea-web` foi testado de ponta a ponta contra esse backend; este app ainda não foi testado no celular
-contra ele.
+`coffea-web` foi testado de ponta a ponta contra esse backend, e este app, num Android (Expo Go 54), em
+16/10/2026 (ver `README.md`, "Teste no celular contra o backend").
 
 **Na prática para este repositório:** construa a UI de resultado assumindo uma **lista** de folhas (0,
 1 ou N), nunca um objeto fixo. Não trave a Visualização avançada à existência de coordenadas — se

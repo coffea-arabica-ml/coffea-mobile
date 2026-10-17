@@ -6,7 +6,8 @@ de ferrugem, bicho-mineiro, cercosporiose e phoma, com a severidade estimada. É
 
 Por padrão, o app roda contra um **mock local** (`src/api/mock/`): os resultados são simulados, e o selo
 "Demonstração" no topo avisa isso. Ele também pode enviar a foto ao `coffea-backend` real, que roda o
-modelo do `coffea-ml` (ver "Mock ou backend real"). Esse modo ainda não foi testado no celular.
+modelo do `coffea-ml` (ver "Mock ou backend real"). Esse modo foi testado num Android em 16/10/2026 (ver
+"Teste no celular contra o backend").
 
 ## Stack
 
@@ -42,24 +43,55 @@ real (`POST /diagnostico`, com o modelo do `coffea-ml`):
    ele só aceita conexões do próprio PC. Ele escuta na porta 8000.
 2. Espere `http://localhost:8000/`, no navegador do PC, mostrar `"carregado": true` no bloco `modelo`
    (alguns segundos; se vier `false`, o campo `motivo` diz por quê, e o diagnóstico responde 503).
-3. Descubra o **IP local** do PC com `ipconfig` (o "Endereço IPv4" do Wi-Fi). Não use `localhost`: o
-   celular é outro aparelho.
+3. Descubra o **IP local** do PC com `ipconfig`: o "Endereço IPv4" do adaptador da rede local (Wi-Fi ou
+   cabo), não o de VirtualBox, WSL ou VPN. Não use `localhost`: o celular é outro aparelho.
 4. Copie `.env.example` para `.env` e preencha, com o seu IP:
    ```
    EXPO_PUBLIC_API_MODE=http
-   EXPO_PUBLIC_API_URL=http://192.168.0.15:8000
+   EXPO_PUBLIC_API_URL=http://<IP do PC>:8000
    ```
 5. Libere a porta 8000 no firewall do Windows: siga a seção "Celular na mesma rede: firewall do Windows"
    do README do `coffea-backend` (regra só no perfil Privado, removida depois da apresentação).
-6. Deixe o celular e o PC na **mesma rede Wi-Fi**, sem isolamento de clientes (comum em rede de
-   faculdade: um aparelho não enxerga o outro; nesse caso, use o hotspot do celular ou outra rede). Para
-   conferir, abra `http://<IP do PC>:8000/` no navegador do celular.
-7. Reinicie o `npx expo start` depois de mudar o `.env`.
+6. Deixe o celular e o PC na **mesma rede** (o celular no Wi-Fi; o PC no Wi-Fi ou no cabo do mesmo
+   roteador), sem isolamento de clientes (comum em rede de faculdade: um aparelho não enxerga o outro; nesse
+   caso, use o hotspot do celular ou outra rede). Para conferir, abra `http://<IP do PC>:8000/` no navegador
+   do celular.
+7. Depois de mudar o `.env`, reinicie com `npx expo start -c`.
 
 O `--tunnel` só leva o app ao celular; a chamada ao backend continua indo direto ao IP do PC. O backend faz
 uma inferência por vez; com fila, o app mostra o aviso de demora. O APK de apresentação (perfil `preview`)
 é gerado com `EXPO_PUBLIC_API_MODE=mock` no `eas.json`, e usar o backend no APK ainda não foi verificado.
 O contrato e os códigos HTTP estão em `docs/frontend-reference/03-contrato-api-mock.md`.
+
+## Teste no celular contra o backend (16/10/2026)
+
+Android com o Expo Go 54; backend no PC com `fastapi run app/main.py --host 0.0.0.0`; celular na mesma rede.
+
+- **Testado e funcionando:**
+  - os exemplos embutidos;
+  - uma foto real da galeria;
+  - a câmera, em retrato, com os círculos coerentes com a foto;
+  - erro de rede (modo avião): com a rede de volta, "Tentar de novo" voltou a funcionar;
+  - 503 (backend com `COFFEA_CARREGAR_MODELO=0`): a mensagem do servidor, "O diagnóstico está indisponível no
+    momento. Tente de novo mais tarde.", e o botão "Tentar de novo".
+- **Não testado:** o TalkBack.
+- **413 e 415:** o app não os gera. Ele barra no aparelho o que não é JPG, PNG ou HEIC ou passa de 10 MB
+  (`verificarImagem`) e regrava toda foto como JPEG de até 2048 px antes do envio (`prepararImagem`, ambos em
+  `src/api/imagem.ts`). Só os testes automatizados (`src/api/http.test.ts`) cobrem esses dois códigos.
+- **Contagem de folhas:** na mesma foto (`20190831_163104.jpg`, do BRACOT de treino), o celular devolveu 5
+  folhas, e o PC (com a original ou com a reduzida pelo Pillow), 4. A folha com ferrugem é a mesma, com a
+  mesma posição e o mesmo tamanho. A diferença é uma folha saudável colada no corte do modelo, que pode
+  aparecer ou sumir conforme a redução da foto (±1; visto em 2 de 6 fotos no PC e na 163104 no celular).
+
+## Dicas para testar no celular
+
+- `.env` com `EXPO_PUBLIC_API_MODE=http` e `EXPO_PUBLIC_API_URL=http://<IP do PC>:8000`. Nunca `localhost`.
+- Use o IP do adaptador da rede local (Wi-Fi ou cabo), não o de VirtualBox, WSL ou VPN.
+- Depois de mudar o `.env`, reinicie com `npx expo start -c`.
+- *Dica, não testada por nós:* se o Expo anunciar o IP errado, defina o certo antes do start, no PowerShell:
+  `$env:REACT_NATIVE_PACKAGER_HOSTNAME="<IP do PC>"`.
+- *Dica, não testada por nós:* se o leitor de QR do Expo Go falhar, libere a permissão de câmera do Expo Go
+  ou use "Enter URL manually".
 
 ## Painel de cenários (só em desenvolvimento)
 

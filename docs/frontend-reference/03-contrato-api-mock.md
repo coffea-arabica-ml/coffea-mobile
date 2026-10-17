@@ -11,9 +11,9 @@ real do coffea-ml).
   o formato de sucesso, os erros tipados e os códigos HTTP descritos abaixo. O `src/api/` deste app foi
   ajustado da mesma forma e coberto por testes de unidade (`http.test.ts`, `diagnostico.test.ts`,
   `normalizar.test.ts`).
-- **O que ainda não foi conferido:** o app no celular contra o backend. O app não envia a foto original: ele a
-  reduz a até 2048 px no lado maior e a envia como JPEG (`FormData { uri, name, type }`), caminho que o teste do
-  web não exercita.
+- **No celular:** em 16/10/2026, o app foi testado num Android (Expo Go 54) contra o backend no PC. A foto
+  foi reduzida a até 2048 px e enviada como JPEG (`FormData { uri, name, type }`). Exemplos, galeria, câmera
+  em retrato, erro de rede e 503 funcionaram. Não testado: o TalkBack. Detalhes no `README.md`.
 
 O mock local (`src/api/mock/`) segue o mesmo contrato e continua sendo o modo padrão, para trabalhar sem
 backend.
@@ -91,10 +91,13 @@ export interface AnaliseSalva {
 - **`regiao`:** o centro é o centroide da máscara da folha, relativo à largura e à altura. O raio é o do
   círculo de mesma área, dividido pela menor dimensão (`coffea-ml/model/inferencia.py`, função
   `regiao_da_folha`), limitado a [0,01; 0,5]. As dimensões são as da foto já com a orientação EXIF aplicada.
-  No app, a foto enviada é o JPEG regravado pelo `expo-image-manipulator`. Ainda não foi conferido no celular
-  que a região cai sobre a folha.
+  No app, a foto enviada é o JPEG regravado pelo `expo-image-manipulator`. No teste no celular (16/10/2026),
+  com a câmera em retrato, os círculos ficaram coerentes com a foto.
 - **Uma foto de uma folha só** (recorte, como as do BRACOL) volta como 1 folha com raio perto de 0,5. O selo
   numerado do círculo fica dentro da foto mesmo nesse caso (`seloDoCirculo`, em `src/domain/geometria.ts`).
+- **Contagem de folhas ±1:** uma folha saudável colada no corte do modelo pode aparecer ou sumir conforme a
+  redução da foto. Na `20190831_163104.jpg`, o celular recebeu 5 folhas, e o PC, 4, com a mesma folha com
+  ferrugem (ver `README.md`).
 
 **Erro:** `{"status": "erro", "tipo": ..., "mensagem": ...}`, com a mensagem em português. Os erros do
 modelo podem trazer também `detalhes` (ignorado).
@@ -111,6 +114,9 @@ modelo podem trazer também `detalhes` (ignorado).
 | 503 | `erro_desconhecido` | modelo indisponível | repassa o tipo do corpo |
 | 500 | `erro_desconhecido` | erro inesperado | repassa o tipo do corpo |
 
+- **413 e 415 no app:** o app não os gera. Ele barra no aparelho o que não é JPG, PNG ou HEIC ou passa de
+  10 MB, e envia sempre um JPEG de até 2048 px. Só os testes automatizados (`http.test.ts`) cobrem esses
+  dois códigos.
 - **`especie_incorreta` não é produzido:** não há dados de outras plantas para treinar essa recusa. Ele
   continua no contrato, no mock e na tela, para o caso de vir a ser produzido.
 - **Sem corpo do contrato** (ex.: um proxy devolvendo HTML): o 413 e o 415 seguem pelo código; os demais viram

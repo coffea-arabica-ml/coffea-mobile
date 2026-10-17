@@ -32,8 +32,11 @@ nos pedidos de permissão e na lista de apps recentes. O `slug` (`coffea-mobile`
   devolve o contrato de `docs/frontend-reference/03-contrato-api-mock.md`. O `coffea-web` foi testado de
   ponta a ponta contra ele em 16/10/2026, e o `src/api/` deste app foi ajustado da mesma forma: o
   `http.ts` repassa o contrato, com 413 e 415 tratados pelo código HTTP.
-- **O app ainda não foi testado no celular contra o backend real.** Como subir o backend e apontar o app
-  para ele: `README.md`, "Mock ou backend real".
+- **Testado no celular contra o backend real em 16/10/2026:** Android, Expo Go 54, backend no PC
+  (`fastapi run app/main.py --host 0.0.0.0`), celular na mesma rede. Exemplos, galeria, câmera em retrato,
+  erro de rede e 503 funcionaram. O TalkBack não foi testado. O 413 e o 415 o app não gera, e só os testes
+  automatizados os cobrem. Resultados em `README.md`, "Teste no celular contra o backend"; como subir o
+  backend e apontar o app para ele, em "Mock ou backend real".
 - **O mock local continua sendo o modo padrão** (`EXPO_PUBLIC_API_MODE=mock`), para trabalhar sem backend e
   para exercitar estados que o modelo raramente produz (ex.: `especie_incorreta`, folha sem `regiao`).
 - Toda suposição sobre a resposta segue isolada em `src/api/`: se o backend mudar, só essa pasta muda.
