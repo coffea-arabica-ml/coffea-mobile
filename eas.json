@@ -13,6 +13,16 @@
         "EXPO_PUBLIC_API_MODE": "mock"
       }
     },
+    "apresentacao": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_MODE": "http",
+        "EXPO_PUBLIC_API_URL": "https://api.coffealab.tech"
+      }
+    },
     "production": {
       "android": {
         "buildType": "app-bundle"
