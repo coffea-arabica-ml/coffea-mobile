@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react'
-import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
+import { Linking, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -11,7 +11,7 @@ import { surgir } from '../components/animacoes'
 import { Botao } from '../components/Botao'
 import { Logo } from '../components/Logo'
 import { Texto } from '../components/Texto'
-import { AVISO_AGRONOMICO } from '../content/textos'
+import { AVISO_AGRONOMICO, URL_CODIGO_FONTE, URL_CREDITOS_DADOS } from '../content/textos'
 import type { PropsRaiz } from '../navigation/tipos'
 import { marcarBoasVindasVistas } from '../state/preferencias'
 import { comAlfa, cores, curvas, duracoes, fontes, LARGURA_CONTEUDO, MARGEM } from '../theme'
@@ -145,6 +145,14 @@ export function TelaInicial({ navigation, route }: PropsRaiz<'Inicial' | 'Sobre'
               Folhas de <Texto tipo="legenda" italico cor={comAlfa(cores.branco, 0.5)}>Coffea arabica</Texto> via Aprendizado
               por Transferência.
             </Texto>
+            <View>
+              <FraseComLink texto="Código-fonte aberto sob a licença AGPL-3.0:" link="github.com/coffea-arabica-ml" url={URL_CODIGO_FONTE} />
+              <FraseComLink
+                texto="Modelos treinados com os conjuntos de dados BRACOL e BRACOT (licença CC BY 4.0):"
+                link="créditos e citações"
+                url={URL_CREDITOS_DADOS}
+              />
+            </View>
             <Texto tipo="legenda" cor={comAlfa(cores.branco, 0.5)}>
               {AVISO_AGRONOMICO}
             </Texto>
@@ -152,6 +160,26 @@ export function TelaInicial({ navigation, route }: PropsRaiz<'Inicial' | 'Sobre'
         </ScrollView>
       </SafeAreaView>
     </View>
+  )
+}
+
+/**
+ * Frase do rodapé que abre `url` no navegador. Um trecho de 12 px seria pequeno demais para o dedo: a frase
+ * inteira é a área de toque, e só `link` aparece como link.
+ */
+function FraseComLink({ texto, link, url }: { texto: string; link: string; url: string }) {
+  return (
+    <Pressable onPress={() => void Linking.openURL(url)} accessibilityRole="link" style={estilos.fraseComLink}>
+      {({ pressed }) => (
+        <Texto tipo="legenda" cor={comAlfa(cores.branco, 0.5)}>
+          {texto}{' '}
+          <Texto tipo="legenda" cor={pressed ? cores.branco : comAlfa(cores.branco, 0.8)} style={estilos.link}>
+            {link}
+          </Texto>
+          .
+        </Texto>
+      )}
+    </Pressable>
   )
 }
 
@@ -203,4 +231,6 @@ const estilos = StyleSheet.create({
   numero: { fontFamily: fontes.display, fontSize: 30, lineHeight: 32, color: cores.folha300, width: 22 },
   passoTexto: { flex: 1, gap: 2 },
   rodape: { gap: 6 },
+  fraseComLink: { minHeight: 44, justifyContent: 'center' },
+  link: { textDecorationLine: 'underline' },
 })

@@ -40,7 +40,8 @@ nos pedidos de permissão e na lista de apps recentes. O `slug` (`coffea-mobile`
 - **O mock local continua sendo o modo padrão** (`EXPO_PUBLIC_API_MODE=mock`), para trabalhar sem backend e
   para exercitar estados que o modelo raramente produz (ex.: `especie_incorreta`, folha sem `regiao`).
 - Toda suposição sobre a resposta segue isolada em `src/api/`: se o backend mudar, só essa pasta muda.
-- A URL de produção do backend depende do deploy (Frente 10).
+- O backend de produção fica em https://api.coffealab.tech. O APK do perfil `apresentacao` usa esse endereço e
+  foi instalado e testado no celular contra ele em 21/10/2026.
 
 ## RF09 e o formato de dados (leia antes de decidir estrutura de dados)
 
@@ -61,7 +62,10 @@ localização nem que sempre existe mais de uma folha (ver `src/domain/visualiza
 - O Expo Go das lojas só abre o SDK mais recente. Para desenvolver, instale o **Expo Go 54** por APK
   no Android (link em https://expo.dev/go?sdkVersion=54&platform=android&device=true). **Alvo:
   Android primeiro**; iOS não pode quebrar, mas não é verificado.
-- A apresentação usa um **APK próprio** (perfil `preview` do `eas.json`), que não depende do Expo Go.
+- A apresentação usa um **APK próprio**, que não depende do Expo Go: o perfil `apresentacao` do `eas.json`
+  (`EXPO_PUBLIC_API_MODE=http`, backend em https://api.coffealab.tech), gerado com
+  `npx eas-cli build --platform android --profile apresentacao`. O perfil `preview` gera o APK com o mock,
+  para demonstrar sem internet.
 - Nesta máquina de desenvolvimento não há emulador: a verificação local é `npm run typecheck`,
   `npm test` e `npx expo export --platform android` (com e sem `--dev`). O resto é no celular.
 - Use `npx expo …` — o `expo-cli` global instalado na máquina é legado e não suporta o SDK 54.
@@ -113,7 +117,7 @@ coffea-mobile/
 ├── assets/           # só ícone, ícone adaptativo/monocromático, splash e favicon (app.json)
 ├── App.tsx           # fontes + splash + providers + NavigationContainer
 ├── app.json
-└── eas.json          # perfil "preview" gera o APK da apresentação
+└── eas.json          # APKs: "apresentacao" (backend de produção) e "preview" (mock, sem internet)
 ```
 Pastas em inglês, identificadores em português (mesma convenção do coffea-web).
 

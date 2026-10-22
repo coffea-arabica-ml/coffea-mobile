@@ -59,9 +59,10 @@ real (`POST /diagnostico`, com o modelo do `coffea-ml`):
 7. Depois de mudar o `.env`, reinicie com `npx expo start -c`.
 
 O `--tunnel` só leva o app ao celular; a chamada ao backend continua indo direto ao IP do PC. O backend faz
-uma inferência por vez; com fila, o app mostra o aviso de demora. O APK de apresentação (perfil `preview`)
-é gerado com `EXPO_PUBLIC_API_MODE=mock` no `eas.json`, e usar o backend no APK ainda não foi verificado.
-O contrato e os códigos HTTP estão em `docs/frontend-reference/03-contrato-api-mock.md`.
+uma inferência por vez; com fila, o app mostra o aviso de demora. O APK do perfil `apresentacao` usa o
+backend de produção (https://api.coffealab.tech) e foi testado no celular em 21/10/2026; o do perfil
+`preview` continua no mock (ver "APK para a apresentação"). O contrato e os códigos HTTP estão em
+`docs/frontend-reference/03-contrato-api-mock.md`.
 
 ## Teste no celular contra o backend (16/10/2026)
 
@@ -121,11 +122,15 @@ npx expo export --platform android --dev    # desenvolvimento (com painel e fixt
 
 ## APK para a apresentação
 
-O perfil `preview` do [`eas.json`](eas.json) gera um APK instalável, que não depende do Expo Go:
+O [`eas.json`](eas.json) gera APKs instaláveis, que não dependem do Expo Go:
+
+- **`apresentacao`**: `EXPO_PUBLIC_API_MODE=http` e `EXPO_PUBLIC_API_URL=https://api.coffealab.tech`, o backend
+  de produção. Este APK foi instalado e testado no celular contra esse backend em 21/10/2026.
+- **`preview`**: o mock (`EXPO_PUBLIC_API_MODE=mock`), para demonstrar sem internet.
 
 ```bash
 npx eas-cli login
-npx eas-cli build --platform android --profile preview
+npx eas-cli build --platform android --profile apresentacao   # ou --profile preview
 ```
 
 O build roda na nuvem da Expo (conta gratuita basta). No fim, o EAS mostra um link/QR para baixar o APK.
@@ -168,3 +173,11 @@ src/dev/         painel de cenários (só em desenvolvimento)
 ## Contribuindo
 
 Trabalhamos direto na `main`, sem branch nem PR (decisão do gestor, 16/10/2026). Commits no imperativo.
+
+## Licença e código-fonte
+
+O projeto é software livre sob a [AGPL-3.0](LICENSE). O código está em
+[github.com/coffea-arabica-ml](https://github.com/coffea-arabica-ml): `coffea-web`, `coffea-mobile`, `coffea-backend` e
+`coffea-ml`. Os modelos foram treinados com conjuntos de dados sob licença CC BY 4.0, com créditos e citações em
+[`coffea-ml/data/README.md`](https://github.com/coffea-arabica-ml/coffea-ml/blob/main/data/README.md). Os links no
+rodapé da tela inicial (que também é o "Sobre") cumprem a seção 13 da AGPL (oferecer o código a quem usa o serviço).

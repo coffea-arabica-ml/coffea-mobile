@@ -3,7 +3,7 @@ export type ModoApi = 'mock' | 'http'
 /** "mock" (padrão) usa src/api/mock; "http" chama o coffea-backend em EXPO_PUBLIC_API_URL. */
 export const modoApi: ModoApi = process.env.EXPO_PUBLIC_API_MODE === 'http' ? 'http' : 'mock'
 
-// TODO(frente-10): a URL de produção depende do deploy do coffea-backend
+// Produção: o perfil "apresentacao" do eas.json define EXPO_PUBLIC_API_MODE=http e EXPO_PUBLIC_API_URL=https://api.coffealab.tech
 export const API_URL: string = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000'
 
 export const LIMITES = {
