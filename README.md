@@ -9,6 +9,20 @@ Por padrão, o app roda contra um **mock local** (`src/api/mock/`): os resultado
 modelo do `coffea-ml` (ver "Mock ou backend real"). Esse modo foi testado num Android em 16/10/2026 (ver
 "Teste no celular contra o backend").
 
+## Baixar o app
+
+A versão `v1.0.0` está publicada como release, com dois APKs:
+
+- [`cafelens-apresentacao.apk`](https://github.com/coffea-arabica-ml/coffea-mobile/releases/latest/download/cafelens-apresentacao.apk):
+  envia a foto ao servidor do projeto, que roda o modelo real. Depende de internet e de o servidor estar no ar.
+- [`cafelens-demonstracao.apk`](https://github.com/coffea-arabica-ml/coffea-mobile/releases/latest/download/cafelens-demonstracao.apk):
+  modo demonstração, com resultados simulados, sem precisar de internet.
+
+Só Android; no iPhone, use o site: <https://coffea-web.vercel.app>. Para instalar, o Android pede para permitir a
+instalação de fontes desconhecidas. Página da release:
+<https://github.com/coffea-arabica-ml/coffea-mobile/releases/latest>. Para gerar os APKs, veja "APK para a
+apresentação".
+
 ## Stack
 
 Expo **SDK 54** (React Native 0.81, React 19, TypeScript), React Navigation 7, Reanimated 4,
@@ -172,7 +186,12 @@ src/dev/         painel de cenários (só em desenvolvimento)
 
 ## Contribuindo
 
-Trabalhamos direto na `main`, sem branch nem PR (decisão do gestor, 16/10/2026). Commits no imperativo.
+O time trabalha direto na `main` (decisão do gestor, 16/10/2026). Quem é de fora contribui com fork e pull request.
+Antes, leia o [guia de contribuição](https://github.com/coffea-arabica-ml/.github/blob/main/CONTRIBUTING.md), o
+[código de conduta](https://github.com/coffea-arabica-ml/.github/blob/main/CODE_OF_CONDUCT.md) e a
+[política de segurança](https://github.com/coffea-arabica-ml/.github/blob/main/SECURITY.md).
+
+Como citar: veja o [`CITATION.cff`](CITATION.cff).
 
 ## Licença e código-fonte
 
